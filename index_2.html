@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>국내숙박 상시 · 프로모션 트랙 대시보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#F2F4F8;--surface:#fff;--ink:#0F1B2D;--sub:#5B6B84;--line:#E3E8F0;--pos:#0B8F5C;--neg:#CE3D5B;
+--A:#1E56D6;--Abg:#EDF2FE;--Adk:#0E2140;--B:#C77A15;--Bbg:#FDF4E3;--Bdk:#3A2A0C}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Pretendard Variable",Pretendard,-apple-system,"Malgun Gothic",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;padding:22px 16px 70px}
+.wrap{max-width:1220px;margin:0 auto}
+.num{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+h1{font-size:24px;font-weight:800;letter-spacing:-.03em}
+.top{margin-bottom:14px}
+.top .sub0{font-size:12.5px;color:var(--sub);margin-top:3px}
+/* TRACK SWITCH */
+.switch{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 6px}
+.tk{border:2px solid var(--line);background:#fff;border-radius:16px;padding:16px 18px;cursor:pointer;text-align:left;transition:.15s}
+.tk .lb{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--sub)}
+.tk .nm{font-size:19px;font-weight:800;margin:3px 0 4px}
+.tk .ds{font-size:12px;color:var(--sub);line-height:1.55}
+.tk .cnt{font-size:12px;font-weight:800;margin-top:7px;display:inline-block;padding:3px 10px;border-radius:99px;background:#EEF1F6;color:var(--sub)}
+.tk.on.a{border-color:var(--A);background:var(--Abg)}
+.tk.on.a .nm,.tk.on.a .lb{color:var(--A)}
+.tk.on.a .cnt{background:var(--A);color:#fff}
+.tk.on.b{border-color:var(--B);background:var(--Bbg)}
+.tk.on.b .nm,.tk.on.b .lb{color:var(--B)}
+.tk.on.b .cnt{background:var(--B);color:#fff}
+.banner{border-radius:12px;padding:11px 16px;font-size:12.5px;font-weight:700;margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.banner.a{background:var(--Abg);color:var(--A);border-left:5px solid var(--A)}
+.banner.b{background:var(--Bbg);color:var(--B);border-left:5px solid var(--B)}
+.banner span{font-weight:600;color:var(--sub)}
+.msel{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.mb{padding:7px 14px;border-radius:9px;border:1px solid var(--line);background:#fff;font-weight:800;font-size:13px;cursor:pointer;color:var(--sub)}
+.mb.on{color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi .l{font-size:10px;font-weight:700;color:var(--sub)}
+.kpi .v{font-size:20px;font-weight:800;margin-top:2px}
+.kpi .v small{font-size:11.5px;color:var(--sub);font-weight:700}
+.kpi .d{font-size:10.5px;font-weight:800;margin-top:2px}
+.kpi.hi{color:#fff}.kpi.hi .l{color:rgba(255,255,255,.65)}.kpi.hi .v small{color:rgba(255,255,255,.65)}
+.up{color:var(--pos)}.dn{color:var(--neg)}.fl{color:var(--sub)}
+section{margin-bottom:24px}
+h2{font-size:16.5px;font-weight:800;letter-spacing:-.02em}
+.sub{font-size:12.5px;color:var(--sub);margin:3px 0 12px;max-width:950px}
+.sub b{color:var(--ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.grid2{display:grid;grid-template-columns:1.5fr 1fr;gap:14px}
+.chart{position:relative;height:265px}
+.rank{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.rk{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 16px}
+.rk.r1{border-width:2px}
+.rk .who{font-size:15px;font-weight:800;display:flex;justify-content:space-between;align-items:baseline}
+.rk .who span.s{font-size:10.5px;color:var(--sub);font-weight:600}
+.rk .hero{margin:10px 0 8px;padding:9px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center}
+.rk .hero .lb{font-size:10px;font-weight:800;color:var(--sub);letter-spacing:.06em}
+.rk .hero .vv{font-size:26px;font-weight:800;letter-spacing:-.03em}
+.rk .hero .dd{font-size:10.5px;font-weight:800}
+.rk .m{display:flex;justify-content:space-between;font-size:12px;padding:4px 0}
+.rk .m b{font-weight:800}
+.snbar{display:flex;height:15px;border-radius:5px;overflow:hidden;margin-top:8px;font-size:9.5px;font-weight:800;color:#fff}
+.snbar .b2{background:#E0863A;display:flex;align-items:center;justify-content:center}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{font-size:10px;font-weight:800;color:var(--sub);letter-spacing:.04em;padding:8px 7px;border-bottom:2px solid var(--ink);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+td{padding:7px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+tr:hover td{background:#F6F8FC}
+tr.sel td{background:#F0F4FB}
+.tabs{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:8px 15px;border-radius:99px;border:1px solid var(--line);background:#fff;font-weight:800;font-size:13px;cursor:pointer;color:var(--sub)}
+.tab.on{color:#fff}
+.callout{border-left:4px solid var(--A);background:var(--Abg);border-radius:0 11px 11px 0;padding:13px 15px;font-size:12.8px;margin-top:12px}
+.callout.warn{border-color:var(--neg);background:#FDF0F3}
+.act{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ac{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:16px;border-top:3px solid var(--A)}
+.ac h3{font-size:13.5px;font-weight:800;margin-bottom:7px}
+.ac p{font-size:12px;color:var(--sub);line-height:1.7}
+.ac p b{color:var(--ink)}
+@media(max-width:1000px){.act{grid-template-columns:1fr}}
+.foot{font-size:11px;color:var(--sub);border-top:1px solid var(--line);padding-top:13px;line-height:1.75;margin-top:10px}
+@media(max-width:1000px){.kpis{grid-template-columns:repeat(3,1fr)}.grid2{grid-template-columns:1fr}.rank{grid-template-columns:1fr 1fr}.switch{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+
+<div class="top">
+  <h1>국내숙박 어카운트 성과 대시보드</h1>
+  <div class="sub0">2026-01-01 ~ 08-20 · 예약일 기준 · dstay 실측 · 갱신 2026-08-21 · 국내사업팀</div>
+</div>
+
+<div class="switch">
+  <button class="tk a on" id="tkA" onclick="setTrack('a')">
+    <div class="lb">TRACK 1</div><div class="nm">📊 상시 세일즈</div>
+    <div class="ds">프로모션 없이 평시에 판매되는 어카운트. <b>플랫폼 전환(UV→CVR)</b>으로 성장시키는 트랙 — 지금 팀의 핵심 과제.</div>
+    <div class="cnt">483 GID · 담당자별 50/122/92/219</div>
+  </button>
+  <button class="tk b" id="tkB" onclick="setTrack('b')">
+    <div class="lb">TRACK 2</div><div class="nm">🔑 키어카운트 (프로모션)</div>
+    <div class="ds">프로모션으로 움직이는 대형 어카운트. <b>기획·딜 단위</b>로 성과가 나며 상시 지표와 섞으면 판단이 왜곡됩니다.</div>
+    <div class="cnt">42 GID · 담당자별 5/19/11/8</div>
+  </button>
+</div>
+<div class="banner a" id="bnr"></div>
+
+<div class="msel" id="msel"></div>
+<div class="kpis" id="kpis"></div>
+
+<section>
+  <h2 id="sbT"></h2><div class="sub" id="sbS"></div>
+  <div class="rank" id="rank"></div><div id="sbNote"></div>
+</section>
+
+<section>
+  <h2 id="cvT"></h2><div class="sub" id="cvS"></div>
+  <div class="card"><div class="chart"><canvas id="cCVR"></canvas></div></div>
+</section>
+
+<section>
+  <h2 id="dT"></h2><div class="sub" id="dS"></div>
+  <div class="tabs" id="tabs"></div>
+  <div class="grid2">
+    <div class="card"><div class="chart"><canvas id="c1"></canvas></div></div>
+    <div class="card"><div class="chart"><canvas id="c2"></canvas></div></div>
+  </div>
+  <div class="card" style="margin-top:14px;overflow-x:auto">
+    <table class="num"><thead><tr><th>월</th><th>CVR</th><th>실제 CM</th><th>GMV</th><th>CMR</th><th>UV</th><th>예약</th><th>직계약</th><th>연동</th><th>직계약%</th><th>활성</th></tr></thead><tbody id="mt"></tbody></table>
+  </div>
+</section>
+
+<section>
+  <h2 id="yoT"></h2><div class="sub" id="yoS"></div>
+  <div class="kpis" id="yoK"></div>
+  <div class="grid2">
+    <div class="card"><div class="chart"><canvas id="cY1"></canvas></div></div>
+    <div class="card"><div class="chart"><canvas id="cY2"></canvas></div></div>
+  </div>
+</section>
+
+<section>
+  <h2 id="acT"></h2><div class="sub" id="acS"></div>
+  <div class="tabs">
+    <button class="tab" id="sCVR" onclick="setSort('cvr')">CVR 순</button>
+    <button class="tab" id="sCM" onclick="setSort('cm')">CM 순</button>
+    <button class="tab" id="sGM" onclick="setSort('gmv')">GMV 순</button>
+  </div>
+  <div class="card" style="overflow-x:auto">
+    <table class="num"><thead><tr><th>#</th><th>어카운트</th><th>GID</th><th>CVR</th><th>실제 CM</th><th>GMV</th><th>UV</th><th>CMR</th><th>전월 대비</th></tr></thead><tbody id="at"></tbody></table>
+  </div>
+</section>
+
+
+<section>
+  <h2 id="agT"></h2><div class="sub" id="agS"></div>
+  <div class="act" id="agenda"></div>
+</section>
+
+<div class="foot" id="foot"></div>
+</div>
+<script>
+const DB={"team26": [[9366, 3494873873, 209322483, 10.2, 390132, 3.56, 123, 8580, 786], [3113, 1033445841, 42740003, 10.6, 248475, 1.96, 117, 2388, 725], [3956, 1581585966, 90255211, 11.4, 233778, 2.88, 117, 3211, 745], [6210, 2096501348, 145295953, 11.1, 332233, 3.0, 113, 5522, 688], [4199, 1568319860, 112850131, 12.0, 241323, 2.87, 115, 3739, 460], [11149, 4808541706, 297394789, 11.2, 557760, 3.3, 116, 10645, 504], [4313, 1997808180, 136642226, 11.7, 356957, 1.9, 111, 3789, 524], [4018, 1449703324, 93553430, 11.8, 233098, 2.17, 119, 3471, 547]], "team25": [[2373, 784180328, 45591476, 10.5, 202307, 1.94, 109, 1509, 864], [4827, 1520242158, 70514528, 10.3, 278406, 3.22, 113, 3838, 989], [5988, 1537102883, 98821892, 11.2, 285523, 3.13, 117, 4350, 1638], [2819, 855075172, 46701179, 10.4, 161423, 2.71, 109, 1843, 976], [4154, 1619316127, 100719588, 10.9, 193894, 3.68, 112, 3126, 1028], [9423, 3183717204, 196437573, 10.6, 353870, 3.92, 120, 8594, 829], [6381, 2456279272, 153523663, 11.2, 383519, 2.79, 119, 4657, 1724], [1963, 791990991, 32930277, 9.5, 154378, 2.15, 115, 1162, 801]], "key26": [[7610, 2989386893, 180320301, 10.2, 262173, 4.27, 35, 7448, 162], [2168, 760887786, 38399731, 11.1, 158213, 2.3, 33, 1969, 199], [2626, 1109594824, 67584534, 12.0, 147615, 3.25, 38, 2436, 190], [3944, 1411128078, 92346375, 10.8, 178323, 3.49, 40, 3789, 155], [3097, 1107645776, 80842831, 12.2, 138495, 3.68, 40, 3047, 50], [9626, 4077506966, 249339387, 11.3, 389509, 4.03, 41, 9532, 94], [3509, 1710709505, 119008149, 11.7, 248813, 2.26, 39, 3490, 19], [4183, 1767623372, 107006328, 11.1, 190267, 2.8, 42, 4080, 103]], "key25": [[1372, 504659500, 31673194, 10.9, 120364, 1.92, 32, 1123, 249], [3636, 1253154203, 58979173, 10.4, 191406, 3.67, 32, 3345, 291], [3749, 1193169789, 84754143, 11.7, 170711, 3.51, 34, 3330, 419], [1560, 499063247, 30281582, 10.9, 82382, 3.06, 30, 1286, 274], [2894, 1284742337, 85486296, 11.1, 103911, 4.93, 32, 2561, 333], [6995, 2607522011, 162635560, 10.3, 207337, 5.06, 33, 6611, 384], [3752, 1578122829, 114950216, 12.2, 230935, 2.84, 33, 3432, 320], [1238, 555582621, 27172877, 9.9, 99087, 2.38, 33, 926, 312]], "own26": {"박형금": [[1075, 278799127, 14603790, 9.8, 76347, 2.2, 46, 559, 516], [730, 197326821, 7715295, 10.1, 58637, 1.79, 42, 362, 368], [420, 133316822, 6640751, 10.1, 34346, 1.78, 40, 137, 283], [1458, 384348657, 30864359, 11.3, 87420, 2.87, 38, 1033, 425], [513, 179834360, 12971716, 11.0, 43764, 1.83, 42, 238, 275], [1929, 541545337, 42342719, 11.7, 133685, 2.37, 39, 1595, 334], [575, 232092213, 17061486, 11.6, 84755, 1.04, 39, 362, 213], [645, 201691334, 10086870, 11.0, 48345, 1.73, 43, 351, 294]], "유다경": [[6677, 2679602639, 159563896, 10.1, 198892, 4.82, 24, 6556, 121], [692, 305568077, 6782886, 9.6, 70174, 1.53, 24, 568, 124], [705, 257575038, 15088503, 10.4, 53170, 2.36, 24, 609, 96], [2292, 911891477, 53164398, 10.4, 102360, 3.52, 24, 2232, 60], [2111, 680628652, 48972995, 10.9, 89463, 3.88, 22, 2075, 36], [4104, 1989819489, 100671038, 10.2, 192514, 3.57, 24, 4056, 48], [1341, 628661225, 48170648, 12.0, 86169, 2.52, 22, 1288, 53], [1572, 609310687, 39553251, 11.1, 68945, 2.75, 24, 1538, 34]], "유수림": [[669, 208391178, 12441729, 10.4, 43836, 2.79, 18, 624, 45], [336, 121524105, 6549792, 10.5, 40813, 1.43, 17, 292, 44], [433, 175897187, 10978319, 10.3, 34170, 2.49, 18, 369, 64], [672, 250564560, 16115183, 10.3, 44350, 2.39, 17, 606, 66], [499, 188568870, 12783252, 11.8, 39574, 2.2, 17, 467, 32], [1396, 539393669, 34593914, 10.7, 83532, 2.86, 18, 1356, 40], [1005, 487357742, 32453897, 11.1, 82584, 1.84, 16, 956, 49], [745, 242385089, 19219840, 14.2, 47189, 1.87, 16, 683, 62]], "정유진": [[945, 328080929, 22713068, 12.1, 71057, 1.95, 35, 841, 104], [1355, 409026838, 21724146, 11.6, 78851, 2.74, 34, 1166, 189], [2399, 1015423319, 57608636, 12.1, 112092, 3.58, 35, 2097, 302], [1788, 549696654, 45152012, 12.2, 98103, 2.86, 34, 1651, 137], [1077, 519848978, 38186944, 13.8, 68522, 2.61, 34, 960, 117], [3730, 1741742601, 120060862, 12.4, 148029, 4.05, 35, 3648, 82], [1404, 654655856, 39337976, 11.9, 103449, 2.13, 34, 1194, 210], [773, 297326346, 18411749, 11.9, 55376, 1.98, 35, 657, 116]]}, "own25": {"박형금": [[426, 116887711, 4584115, 9.2, 28122, 2.15, 38, 66, 360], [714, 149232431, 5164670, 9.1, 47191, 2.78, 39, 297, 417], [1476, 285498217, 16442564, 10.2, 77929, 2.71, 40, 713, 763], [686, 190141306, 10660202, 10.4, 43913, 2.35, 36, 372, 314], [437, 115142444, 4611294, 9.2, 30023, 2.23, 38, 144, 293], [1145, 279284526, 15579573, 11.9, 73949, 2.18, 45, 906, 239], [1720, 617054337, 22803922, 9.4, 103651, 2.97, 44, 750, 970], [720, 217841010, 10004409, 10.1, 50110, 2.82, 44, 461, 259]], "유다경": [[473, 193934740, 7319073, 9.6, 66336, 1.34, 22, 356, 117], [3014, 1067706787, 46404358, 10.2, 141871, 4.2, 21, 2860, 154], [584, 186517247, 10424839, 10.3, 49155, 1.92, 24, 424, 160], [356, 153734201, 6984215, 10.2, 34414, 1.72, 22, 263, 93], [230, 100902399, 2752324, 8.8, 22822, 1.68, 22, 126, 104], [5459, 2139557996, 128023863, 9.9, 142712, 5.63, 23, 5190, 269], [1561, 713073157, 48196559, 11.6, 80854, 3.38, 23, 1339, 222], [203, 97324990, 3425317, 8.8, 26676, 1.17, 20, 84, 119]], "유수림": [[346, 160026588, 9308132, 10.0, 40963, 1.69, 17, 247, 99], [275, 91067392, 6227493, 12.5, 33575, 1.25, 18, 138, 137], [199, 60629742, 2386584, 8.9, 19109, 1.5, 17, 59, 140], [169, 53851130, 3087710, 9.9, 15771, 1.81, 16, 71, 98], [485, 204502207, 13241222, 10.0, 34323, 2.85, 17, 380, 105], [221, 73941191, 4680735, 10.1, 30914, 1.23, 18, 143, 78], [524, 237236750, 14382715, 11.4, 56155, 1.61, 17, 416, 108], [450, 235100303, 11712069, 10.3, 39578, 2.03, 17, 385, 65]], "정유진": [[1128, 313331289, 24380156, 11.8, 66886, 2.61, 32, 840, 288], [824, 212235548, 12718006, 10.7, 55769, 2.27, 35, 543, 281], [3729, 1004457677, 69567904, 11.8, 139330, 4.02, 36, 3154, 575], [1608, 457348535, 25969052, 10.6, 67325, 3.66, 35, 1137, 471], [3002, 1198769077, 80114748, 11.3, 106726, 4.77, 35, 2476, 526], [2598, 690933491, 48153402, 12.2, 106295, 3.62, 34, 2355, 243], [2576, 888915028, 68140467, 12.0, 142859, 2.79, 35, 2152, 424], [590, 241724688, 7788481, 8.6, 38014, 2.09, 34, 232, 358]]}, "keyOwn26": {"유다경": [[6407, 2584291782, 153352991, 10.0, 175013, 5.2, 12, 6296, 111], [551, 236921365, 3598887, 9.4, 53697, 1.57, 12, 448, 103], [624, 210366033, 12761190, 10.5, 42866, 2.62, 15, 572, 52], [1998, 809290552, 46964634, 10.4, 77687, 4.07, 17, 1988, 10], [1985, 574069956, 42673663, 11.0, 72298, 4.31, 16, 1982, 3], [4075, 1953894629, 98079401, 10.2, 177091, 3.83, 17, 4066, 9], [1507, 678310728, 51442419, 11.9, 76938, 3.06, 15, 1497, 10], [3306, 1435409982, 85675091, 10.5, 118900, 3.53, 18, 3288, 18]], "정유진": [[413, 172128214, 13091228, 12.3, 30945, 2.08, 7, 393, 20], [662, 209186483, 14565352, 12.3, 30926, 3.78, 6, 648, 14], [1488, 682115280, 42311437, 13.1, 63873, 4.23, 7, 1482, 6], [1064, 295250532, 25223793, 12.4, 40624, 4.25, 7, 1060, 4], [664, 364405015, 26778589, 14.6, 28644, 4.04, 8, 662, 2], [3096, 1345648700, 97156925, 13.0, 90691, 5.45, 8, 3096, 0], [753, 373944500, 22803549, 11.9, 51494, 2.39, 8, 753, 0], [355, 126126990, 8574732, 12.0, 27349, 2.04, 8, 352, 3]], "유수림": [[505, 164612297, 8878964, 9.7, 24308, 3.8, 11, 474, 31], [186, 74036995, 3729155, 9.4, 22534, 1.48, 10, 154, 32], [239, 110620822, 6024735, 9.0, 17602, 2.76, 11, 196, 43], [534, 206968772, 12392542, 10.0, 33679, 2.56, 11, 494, 40], [176, 82375866, 4606073, 10.3, 21766, 1.42, 11, 157, 19], [1185, 460800687, 29439029, 10.4, 62354, 3.19, 11, 1176, 9], [970, 493709077, 32831847, 11.1, 71846, 2.09, 11, 964, 6], [232, 104232556, 11085006, 16.4, 28845, 0.99, 11, 194, 38]], "박형금": [[285, 68354600, 4997118, 12.2, 31907, 1.65, 5, 285, 0], [769, 240742943, 16506337, 12.1, 51056, 2.55, 5, 719, 50], [275, 106492689, 6487172, 11.1, 23274, 2.09, 5, 186, 89], [348, 99618222, 7765406, 10.9, 26333, 1.8, 5, 247, 101], [272, 86794939, 6784506, 12.5, 15787, 3.3, 5, 246, 26], [1269, 316645950, 24645601, 12.0, 59373, 3.37, 5, 1193, 76], [279, 164745200, 11930334, 11.9, 48535, 1.13, 5, 276, 3], [371, 128559405, 3937192, 12.0, 19264, 2.24, 5, 328, 43]]}, "cnt": {"박형금": 50, "유다경": 122, "유수림": 92, "정유진": 219}, "keyCnt": {"박형금": 5, "유다경": 19, "유수림": 11, "정유진": 8}, "acc": {"6": [["인스파이어 엔터테인먼트 리조트", 68557620, 1559253300, 4.31, 107822, 10], ["휘닉스 평창 리조트", 46113697, 467803800, 6.44, 38023, 14.5], ["신화관 제주신화월드", 24927900, 424384250, 5.06, 21602, 12], ["세인트존스 경포호텔", 21073263, 270501850, 4.23, 43001, 11.9], ["롯데 호텔 제주", 13011436, 233363844, 2.79, 15655, 10], ["소노벨 비발디파크 B·C", 16823663, 220747000, 5.52, 22784, 11], ["랜딩관 제주신화월드", 9379427, 208587650, 5.91, 16068, 12], ["서머셋 제주신화월드", 12311950, 185800500, 5.67, 4956, 12], ["롯데 리조트 속초", 8388131, 140518300, 2.63, 11443, 10], ["소노벨 변산 리조트", 8312524, 116839000, 5.83, 13681, 11], ["롯데 부여 리조트", 6298896, 107129549, 2.92, 13078, 10], ["신라호텔 제주", 2971714, 68884999, 2.66, 6045, 8.8], ["롯데 호텔 월드", 4178264, 54951500, 3.99, 3939, 14.7], ["신라모노그램 강릉 레지던스", 4613211, 51982411, 1.59, 14590, 12.7], ["소노벨 변산 호텔", 3610887, 51194000, 4.0, 8521, 11], ["라한셀렉트 경주", 3845002, 49724500, 1.73, 13725, 12], ["라 테라스 부티크 리조트", 3149299, 47892778, 2.68, 7737, 12.8], ["소노벨 비발디파크 A", 3562324, 46902000, 3.21, 9087, 11], ["신라모노그램 강릉 호텔", 3339063, 36695707, 1.47, 12818, 13], ["소노벨 델피노", 2404639, 34137000, 3.28, 3816, 11]], "7": [["그랜드 앰배서더 서울 풀만", 20810580, 221733616, 5.03, 14867, 13.9], ["신화관 제주신화월드", 7817431, 138581000, 2.53, 12787, 12], ["소피텔 앰배서더 서울", 10669581, 132156000, 4.94, 6782, 13], ["소노벨 단양", 7324917, 107558000, 6.15, 7219, 11], ["휘닉스 평창 리조트", 7362701, 103007000, 2.8, 20088, 12], ["히든 클리프 호텔 N 네이처", 5674634, 76919991, 2.74, 10755, 13], ["소노벨 비발디파크 B·C", 5429597, 73603000, 2.28, 10926, 11], ["소노벨 변산 리조트", 4952508, 70502000, 2.53, 12514, 11], ["소노벨 델피노", 5065341, 68973000, 3.26, 8333, 11], ["서울신라호텔", 2870740, 64830870, 2.6, 5234, 8], ["서머셋 제주신화월드", 3695807, 58826200, 3.33, 2853, 12], ["랜딩관 제주신화월드", 2982165, 57872950, 2.59, 7498, 12], ["인스파이어 엔터테인먼트 리조트", 2412203, 53400600, 1.07, 10739, 10], ["롯데 부여 리조트", 3039468, 50802000, 1.69, 8422, 10], ["라 테라스 부티크 리조트", 2795734, 47457000, 1.49, 11976, 13], ["★최저가도전★ 안토", 3072355, 47193000, 1.4, 8797, 10], ["신라호텔 제주", 1357917, 29986662, 1.82, 2093, 10.3], ["해비치 호텔 & 리조트 제주", 1813029, 29826820, 1.93, 1762, 13], ["신라모노그램 강릉 호텔", 2442019, 26568440, 1.03, 7089, 11]], "8": [["파라다이스 시티 / 아트 파라디소", 44551143, 837009800, 4.15, 53031, 10.0], ["소노벨 비발디파크 B·C", 13584071, 190596000, 3.62, 17560, 11], ["롤링 힐스 호텔", 6621613, 107699900, 7.36, 5329, 12], ["휘닉스 평창 리조트", 6598995, 94245890, 2.79, 17342, 12.1], ["비스타 워커힐 서울", 5200403, 78258412, 9.79, 2471, 11.9], ["휘닉스 제주 섭지코지", 4087033, 63243474, 4.08, 5128, 12.7], ["윈덤 강원 고성 호텔", 2879897, 52904615, 4.39, 5057, 12], ["롯데 호텔 부산", 1951890, 44987142, 3.56, 3815, 10.2], ["★최저가도전★ 안토", 8358270, 43051576, 0.78, 13009, 24.4], ["소노벨 단양", 2807397, 38613000, 3.98, 4146, 11], ["그랜드 워커힐 서울", 2403785, 34508764, 4.74, 1752, 11.8], ["워커힐 더글라스 하우스", 2330041, 33453811, 8.03, 1121, 11.9], ["세인트존스 경포호텔", 752785, 27684346, 2.02, 5394, 11.4], ["인스파이어 엔터테인먼트 리조트", 1240068, 24116400, 0.76, 7332, 10], ["롯데 호텔 제주", 854230, 23274495, 2.22, 1214, 10], ["라한셀렉트 경주", 1470551, 22155557, 1.61, 4773, 11.1], ["소노 펠리체 빌리지 비발디", 1324740, 18149000, 2.59, 1580, 11], ["라 테라스 부티크 리조트", 501440, 16112950, 1.6, 3385, 13], ["신화관 제주신화월드", 859446, 15271300, 1.11, 3056, 12], ["소노벨 변산 리조트", 777362, 14225000, 2.31, 2119, 11], ["신라호텔 제주", 696541, 13973291, 2.2, 772, 10.3], ["신라모노그램 강릉 레지던스", 640190, 12439430, 1.16, 3694, 11.1], ["신라모노그램 강릉 호텔", 597210, 12196192, 1.01, 3868, 9], ["네스트 호텔 인천", 589893, 11931446, 2.18, 2339, 11.5], ["호텔 마리나베이 코리아", 850245, 10999076, 4.63, 2247, 15], ["롯데 부여 리조트", 295791, 10838000, 1.44, 1597, 10], ["르컬렉티브 시흥 웨이브파크", 547060, 10147231, 2.73, 1792, 14.7], ["그랜드 조선 제주", 456322, 9297000, 2.39, 586, 10], ["소노벨 비발디파크 A", 549229, 8275000, 2.06, 1408, 11], ["소노펠리체 델피노", 594819, 7988000, 2.68, 410, 11]], "cum": [["인스파이어 엔터테인먼트 리조트", 250971606, 4882389440, 4.41, 370363, 10.0], ["휘닉스 평창 리조트", 99783406, 1105115690, 4.62, 134230, 13.4], ["소노벨 비발디파크 B·C", 78805710, 1085002000, 5.11, 106535, 10.9], ["파라다이스 시티 / 아트 파라디소", 49867800, 935232340, 3.6, 70629, 10.0], ["신화관 제주신화월드", 48954633, 848803650, 3.36, 76472, 12.0], ["롯데 호텔 월드", 47302552, 677059228, 4.24, 54893, 14.7], ["롯데 호텔 제주", 28414241, 558710736, 2.66, 44416, 10.0], ["서머셋 제주신화월드", 33401797, 507484849, 3.28, 27171, 11.8], ["세인트존스 경포호텔", 29399850, 427107427, 2.69, 108080, 11.3], ["롯데 부여 리조트", 22398532, 403040026, 3.18, 56316, 10.0], ["랜딩관 제주신화월드", 19055037, 396868097, 3.23, 61320, 12.0], ["신라모노그램 강릉 레지던스", 27598147, 386014086, 2.65, 77825, 11.1], ["롯데 리조트 속초", 17661477, 304492282, 1.78, 49516, 9.7], ["그랜드 앰배서더 서울 풀만", 27338608, 294037173, 2.34, 43011, 13.9], ["라 테라스 부티크 리조트", 16789342, 255897340, 2.47, 46277, 12.9], ["★최저가도전★ 안토", 19636187, 219550191, 1.64, 46245, 12.8], ["소노벨 변산 리조트", 15003949, 218529000, 3.89, 32531, 11.0], ["소노벨 단양", 13398630, 199506000, 4.6, 19170, 10.8], ["신라모노그램 강릉 호텔", 15336142, 199398308, 2.05, 52027, 11.2], ["해비치 호텔 & 리조트 제주", 12086011, 176873410, 1.82, 22828, 12.2], ["신라호텔 제주", 7831026, 176038109, 1.62, 20912, 8.9], ["라한셀렉트 경주", 11513999, 160993725, 1.54, 46521, 11.7], ["소노벨 델피노", 10619763, 158632000, 2.93, 23280, 10.8], ["히든 클리프 호텔 N 네이처", 11925241, 153064649, 2.29, 26855, 12.7], ["그랜드 조선 부산", 7967440, 148915410, 1.97, 22277, 10.0], ["롤링 힐스 호텔", 9399090, 148100795, 3.34, 18842, 11.8], ["서울신라호텔", 6383289, 136428890, 1.2, 28563, 8.0], ["소피텔 앰배서더 서울", 10137709, 133424830, 2.49, 13872, 13.0], ["휘닉스 제주 섭지코지", 7246109, 125434673, 2.57, 15590, 11.4], ["파라다이스 호텔 부산", 7405081, 117182796, 1.87, 28498, 10.0], ["네스트 호텔 인천", 8686400, 106306931, 1.75, 27201, 12.1], ["소노벨 비발디파크 A", 7590514, 102675000, 2.5, 21840, 10.9], ["소노펠리체 델피노", 5957315, 102636304, 1.73, 15043, 9.9], ["신라스테이 플러스 이호테우", 6171099, 101431635, 1.39, 25300, 11.9], ["윈덤 강원 고성 호텔", 4960534, 98874004, 2.89, 14017, 9.9], ["비스타 워커힐 서울", 6675390, 98248192, 1.97, 16322, 11.8], ["소노벨 변산 호텔", 6029648, 86242000, 3.04, 17217, 11.0], ["롯데 호텔 부산", 3868676, 83437360, 1.54, 17785, 10.0], ["엠버 퓨어힐 호텔 앤 리조트", 6951422, 81498284, 1.43, 17432, 14.3], ["워커힐 더글라스 하우스", 5798379, 80794235, 3.96, 8098, 11.9], ["켄싱턴 호텔 평창", 5213445, 78351235, 2.77, 17586, 10.5], ["윈덤 그랜드 부산 이진", 4541589, 77869526, 2.16, 14136, 10.8], ["소노 펠리체 빌리지 비발디", 4818565, 73569000, 1.65, 12726, 10.4], ["파크로쉬 리조트 앤 웰니스", 5616886, 73039337, 2.21, 13599, 12.8], ["서귀포 더퍼스트70", 3002145, 66579375, 2.55, 21998, 10.5], ["호텔 휘슬라크 제주", 2622772, 62091875, 2.64, 17892, 11.2], ["그랜드 워커힐 서울", 4132558, 57459026, 1.76, 9541, 11.8], ["메종 글래드 제주", 3844136, 57238284, 1.76, 15434, 11.1], ["그랜드 조선 제주", 3141137, 56950583, 1.13, 12009, 9.7], ["라마다 호텔&스위트 강원 평창", 2511853, 55349937, 2.3, 14412, 8.0]]}, "keyacc": [["인스파이어 엔터테인먼트 리조트", 250971606, 4882389440, 4.41, 370363, 10.0], ["휘닉스 평창 리조트", 99783406, 1105115690, 4.62, 134230, 13.4], ["소노벨 비발디파크 B·C", 78805710, 1085002000, 5.11, 106535, 10.9], ["파라다이스 시티 / 아트 파라디소", 49867800, 935232340, 3.6, 70629, 10.0], ["신화관 제주신화월드", 48954633, 848803650, 3.36, 76472, 12.0], ["롯데 호텔 월드", 47302552, 677059228, 4.24, 54893, 14.7], ["서머셋 제주신화월드", 33401797, 507484849, 3.28, 27171, 11.8], ["세인트존스 경포호텔", 29399850, 427107427, 2.69, 108080, 11.3], ["롯데 부여 리조트", 22398532, 403040026, 3.18, 56316, 10.0], ["랜딩관 제주신화월드", 19055037, 396868097, 3.23, 61320, 12.0], ["카시아 속초", 21606008, 331710690, 1.43, 80669, 11.9], ["롯데 리조트 속초", 17661477, 304492282, 1.78, 49516, 9.7], ["그랜드 앰배서더 서울 풀만", 27338608, 294037173, 2.34, 43011, 13.9], ["★최저가도전★ 안토", 19636187, 219550191, 1.64, 46245, 12.8], ["소노벨 변산 리조트", 15003949, 218529000, 3.89, 32531, 11.0], ["소노벨 단양", 13398630, 199506000, 4.6, 19170, 10.8], ["오크밸리 리조트 밸리빌리지", 14321464, 193987714, 3.36, 32974, 12.8], ["소노캄 비발디파크", 13163832, 192258000, 2.52, 27175, 11.0], ["강릉 씨마크 호텔", 10800615, 163075080, 1.53, 35678, 11.5], ["소노벨 델피노", 10619763, 158632000, 2.93, 23280, 10.8], ["서울신라호텔", 6383289, 136428890, 1.2, 28563, 8.0], ["소피텔 앰배서더 서울", 10137709, 133424830, 2.49, 13872, 13.0], ["소노벨 비발디파크 D", 7861238, 106472000, 2.6, 25122, 11.0], ["소노벨 비발디파크 A", 7590514, 102675000, 2.5, 21840, 10.9], ["소노펠리체 델피노", 5957315, 102636304, 1.73, 15043, 9.9], ["소노벨 청송", 6581057, 100278428, 2.31, 18918, 10.7], ["비스타 워커힐 서울", 6675390, 98248192, 1.97, 16322, 11.8], ["오크밸리 리조트 힐스빌리지", 6925729, 96073037, 3.2, 18128, 12.9], ["소노벨 변산 호텔", 6029648, 86242000, 3.04, 17217, 11.0], ["여수 깔라까따 호텔&리조트", 5310592, 83523195, 2.31, 14282, 12.9], ["워커힐 더글라스 하우스", 5798379, 80794235, 3.96, 8098, 11.9], ["쏠비치 진도 리조트", 4103052, 69490679, 1.79, 15547, 10.4], ["그랜드 워커힐 서울", 4132558, 57459026, 1.76, 9541, 11.8], ["쏠비치 진도 호텔", 1814780, 30578000, 1.88, 5749, 10.8], ["롯데 호텔앤리조트 김해", 1521502, 25495328, 1.09, 8536, 10.4], ["소노벨 제주", 1362819, 24043800, 2.27, 4271, 10.8], ["소노벨 천안 West", 1025827, 18395000, 2.59, 3590, 11.0], ["소노벨 천안 East", 991282, 16856000, 2.2, 3226, 11.0], ["베스트 웨스턴 플러스 전주 호텔", 508136, 12057979, 2.33, 3096, 7.1], ["휘닉스 호텔 평창", 486169, 7061400, 1.14, 4282, 10.3], ["소노캄 제주 빌라", 159193, 2369000, 0.31, 1907, 11.0]]};
+const F={family:'Pretendard Variable'};
+const MN=['1월','2월','3월','4월','5월','6월','7월','8월'];
+const OWN=['유다경','정유진','박형금','유수림'];
+const CLR={'유다경':'#1E56D6','정유진':'#0B8F5C','박형금':'#CE3D5B','유수림':'#B58A1F'};
+const won=v=>v>=1e8?(v/1e8).toFixed(2)+'억':(v/1e4).toFixed(0)+'만';
+let track='a', mi=7, cur='팀 전체', sortK='cvr', ch1,ch2,chC,chY1,chY2;
+const TH=()=>track==='a'?{c:'#1E56D6',dk:'#0E2140',bg:'#EDF2FE',nm:'상시 세일즈',ico:'📊'}:{c:'#C77A15',dk:'#3A2A0C',bg:'#FDF4E3',nm:'키어카운트(프로모션)',ico:'🔑'};
+const TEAM=()=>track==='a'?DB.team26:DB.key26;
+const TEAM25=()=>track==='a'?DB.team25:DB.key25;
+const OWNM=()=>track==='a'?DB.own26:DB.keyOwn26;
+const OWN25=()=>track==='a'?DB.own25:null;
+const CNT=()=>track==='a'?DB.cnt:DB.keyCnt;
+function setTrack(t){track=t;cur='팀 전체';document.getElementById('tkA').classList.toggle('on',t==='a');document.getElementById('tkB').classList.toggle('on',t==='b');render();}
+function setM(i){mi=i;render();}
+function selOwner(k){cur=k;render();}
+function setSort(k){sortK=k;renderAcc();}
+function agg(a){const s={rsv:0,gmv:0,cm:0,uv:0,sn:0,ch:0};a.forEach(r=>{s.rsv+=r[0];s.gmv+=r[1];s.cm+=r[2];s.uv+=r[4];s.sn+=r[7];s.ch+=r[8];});
+ s.cmr=a.reduce((t,r)=>t+r[3]*r[1],0)/s.gmv;s.cvr=a.reduce((t,r)=>t+r[5]*r[4],0)/s.uv;s.act=Math.round(a.reduce((t,r)=>t+r[6],0)/a.length);return s;}
+function row(a,i){const r=a[i];return {rsv:r[0],gmv:r[1],cm:r[2],cmr:r[3],uv:r[4],cvr:r[5],act:r[6],sn:r[7],ch:r[8]};}
+function pick(a){return mi===99?agg(a):row(a,mi);}
+const arrow=(v,u,d)=>{if(v===null||v===undefined||isNaN(v))return '<span class="fl">—</span>';const c=v>0?'up':(v<0?'dn':'fl');return '<span class="'+c+'" style="font-weight:800">'+(v>0?'+':'')+v.toFixed(d||0)+u+'</span>';};
+const pct=(a,b)=>b?((a-b)/Math.abs(b)*100):null;
+
+const AGENDA={a:[
+ ['① 7·8월 상시 CVR 붕괴 원인 규명','var(--A)','상시 CVR이 6월 3.30% → 7월 <b>1.90%</b>(연중 최저) → 8월 2.14%로 무너졌습니다. 7월 UV는 356,957로 <b>연중 2위 규모를 확보하고도</b> 전환에 실패했습니다. 담당자 전원 동반 하락(박형금 7월 <b>1.04%</b>)이므로 개인 역량이 아닌 구조 요인 — <b>UV 소스 믹스 / 프로모션 캘린더 공백 / 여름 예약 타이밍</b> 3가설을 이번 주 검증합니다.'],
+ ['② 박형금 라인 연동 37% → 직계약 전환','var(--neg)','상시 직계약 비중이 유다경 97% · 유수림 93% · 정유진 91%인데 <b>박형금만 63%</b>입니다. 연동 물량이 UV를 부풀리며 CVR을 희석하는 구조로, 상시 CVR <b>2.03%로 최하위</b>인 직접 원인일 가능성이 큽니다. 다만 CM은 YoY <b>+58%</b>로 수익성은 개선 중 — <b>연동→직계약 전환이 CVR 개선의 최단 경로</b>입니다.'],
+ ['③ 고CVR·저UV 계정에 노출 집중','var(--pos)','8월 상시 CVR 상위: <b>롤링 힐스 7.36%</b>(UV 5,329) · 호텔 마리나베이 4.63%(UV 2,247) · 윈덤 강원 고성 4.39% · 휘닉스 제주 섭지코지 4.08%. 전부 <b>UV가 5천 안팎으로 작습니다</b> — 노출만 2배로 늘려도 CM이 즉시 따라오는 구간입니다. 이번 주 플랫폼팀 노출 요청 명단 5곳을 확정하세요.']],
+b:[
+ ['① 프로모션 성과는 성장 중 — 단 하반기 공백','var(--B)','프로모션 트랙은 GMV 94.8억 → <b>141.7억(+49%)</b>, CM 5.96억 → <b>8.95억(+50%)</b>으로 작년 대비 크게 성장했습니다. 다만 CVR은 3.51% → 3.34%로 소폭 하락했고, <b>7월 2.26% · 8월 2.34%</b>로 6월(4.03%) 대비 반토막입니다. <b>7~8월 프로모션 캘린더 공백</b>이 상시 CVR 하락과 같은 시점에 발생했는지 대조 필요.'],
+ ['② 정유진 — 8개로 계정당 CM 1위','var(--pos)','정유진은 프로모션 계정 <b>8개만 보유</b>하고도 CM 2.51억, <b>계정당 3,131만 원으로 1위</b>(2위 유다경 2,511만 대비 +25%). 6월 CVR <b>5.45%</b>로 전 담당자 월 최고 기록. 적은 계정으로 최대 효율을 내는 운영법을 <b>위클리에서 공유받아 팀 플레이북으로</b> 만드세요.'],
+ ['③ 유수림 라인 — 마진은 최고, 전환은 최저','var(--neg)','유수림 프로모션 8월 CMR <b>16.4%로 전 담당자 최고</b>이나 CVR은 <b>0.99%로 최저</b>입니다. 마진 좋은 딜을 잡았지만 팔리지 않는 상태 — 가격이 아닌 <b>노출·상품 구성</b> 점검이 필요합니다. 또한 8월 안토의 CMR 24.4%(평소 10~13%)는 <b>이상치</b>이므로 정산 확인이 필요합니다.']]};
+function renderAgenda(){
+ const th=TH();const list=AGENDA[track];
+ document.getElementById('agT').textContent=th.ico+' 이번 주 논의 안건 — '+th.nm;
+ document.getElementById('agS').innerHTML=track==='a'?'상시 트랙 데이터가 가리키는 세 가지 액션':'프로모션 트랙 데이터가 가리키는 세 가지 액션';
+ document.getElementById('agenda').innerHTML=list.map(c=>'<div class="ac" style="border-top-color:'+c[1]+'"><h3>'+c[0]+'</h3><p>'+c[2]+'</p></div>').join('');
+}
+
+function render(){
+ const th=TH(),lab=mi===99?'1~8월 누적':MN[mi];
+ document.documentElement.style.setProperty('--A',th.c);
+ document.getElementById('bnr').className='banner '+track;
+ document.getElementById('bnr').innerHTML=track==='a'
+  ?'📊 지금 보고 있는 트랙: <b>상시 세일즈</b> — 프로모션 키어카운트 42개는 <b>전량 제외</b>됨 <span>· 목표는 CVR을 올려 상시 공헌이익을 키우는 것</span>'
+  :'🔑 지금 보고 있는 트랙: <b>키어카운트(프로모션)</b> — 상시 어카운트는 <b>전량 제외</b>됨 <span>· 프로모션 기획 단위 성과이며 상시 지표와 합산하지 않음</span>';
+ document.getElementById('msel').innerHTML=MN.map((m,i)=>'<button class="mb'+(i===mi?' on':'')+'" style="'+(i===mi?'background:'+th.dk+';border-color:'+th.dk:'')+'" onclick="setM('+i+')">'+m+(i===7?' (~20일)':'')+'</button>').join('')+
+  '<button class="mb'+(mi===99?' on':'')+'" style="'+(mi===99?'background:'+th.dk+';border-color:'+th.dk:'')+'" onclick="setM(99)">1~8월 누적</button>';
+ const t=pick(TEAM()),prev=(mi>0&&mi!==99)?row(TEAM(),mi-1):null;
+ const sn=t.sn/(t.sn+t.ch)*100;
+ document.getElementById('kpis').innerHTML=
+ '<div class="kpi hi" style="background:'+th.dk+'"><div class="l">CVR ①</div><div class="v num">'+t.cvr.toFixed(2)+'<small>%</small></div><div class="d">'+(prev?arrow(t.cvr-prev.cvr,'%p',2)+' MoM':'기간 평균')+'</div></div>'+
+ '<div class="kpi"><div class="l">실제 CM ②</div><div class="v num">'+won(t.cm)+'</div><div class="d">'+(prev?arrow(pct(t.cm,prev.cm),'%')+' MoM':'기간 합계')+'</div></div>'+
+ '<div class="kpi"><div class="l">GMV ③</div><div class="v num">'+(t.gmv/1e8).toFixed(1)+'<small>억</small></div><div class="d">'+(prev?arrow(pct(t.gmv,prev.gmv),'%')+' MoM':'기간 합계')+'</div></div>'+
+ '<div class="kpi"><div class="l">CMR ④</div><div class="v num">'+t.cmr.toFixed(1)+'<small>%</small></div><div class="d fl">공헌이익률</div></div>'+
+ '<div class="kpi"><div class="l">직계약 비중</div><div class="v num">'+sn.toFixed(0)+'<small>%</small></div><div class="d fl">연동 '+(100-sn).toFixed(0)+'%</div></div>'+
+ '<div class="kpi"><div class="l">UV / 활성</div><div class="v num">'+(t.uv/1e3).toFixed(0)+'K<small> / '+t.act+'</small></div><div class="d fl">'+(track==='a'?'상시 계정':'프로모션 계정')+'</div></div>';
+ // scoreboard
+ document.getElementById('sbT').textContent=th.ico+' '+th.nm+' · 담당자 스코어보드 — '+lab;
+ document.getElementById('sbS').innerHTML=track==='a'
+  ?'순위는 <b>CVR 기준</b> (상시는 전환율이 선행지표). 담당 상시 계정: 유다경 122 · 정유진 219 · 유수림 92 · 박형금 50.'
+  :'순위는 <b>CM 기준</b> (프로모션은 딜 규모가 성과). 보유 프로모션 계정 수 편차가 크므로 <b>계정당 CM</b>을 함께 봅니다.';
+ const OM=OWNM(),C=CNT();
+ const rows=OWN.map(k=>({k,v:pick(OM[k]),n:C[k]})).sort((a,b)=>track==='a'?b.v.cvr-a.v.cvr:b.v.cm-a.v.cm);
+ document.getElementById('rank').innerHTML=rows.map((r,i)=>{
+  const p=(mi>0&&mi!==99)?row(OM[r.k],mi-1):null;
+  const s=r.v.sn/(r.v.sn+r.v.ch)*100;
+  const heroL=track==='a'?'CVR':'실제 CM';
+  const heroV=track==='a'?r.v.cvr.toFixed(2)+'%':won(r.v.cm);
+  const dd=p?(track==='a'?(r.v.cvr-p.cvr):pct(r.v.cm,p.cm)):null;
+  const ddT=dd===null?'기간 합계':(track==='a'?arrow(dd,'%p',2)+' MoM':arrow(dd,'%')+' MoM');
+  return '<div class="rk'+(i===0?' r1':'')+'" style="'+(i===0?'border-color:'+th.c+';background:linear-gradient(155deg,'+th.bg+',#fff 62%)':'')+'">'+
+  '<div class="who"><span>'+['🥇','🥈','🥉','4위'][i]+' '+r.k+'</span><span class="s">'+r.n+'개 · 활성 '+r.v.act+'</span></div>'+
+  '<div class="hero"><div class="lb">'+heroL+'</div><div class="vv num" style="color:'+(i===0?th.c:'var(--ink)')+'">'+heroV+'</div><div class="dd">'+ddT+'</div></div>'+
+  (track==='a'?'<div class="m"><span>실제 CM</span><b>'+won(r.v.cm)+'</b></div>':'<div class="m"><span>CVR</span><b>'+r.v.cvr.toFixed(2)+'%</b></div>')+
+  '<div class="m"><span>GMV</span><b>'+(r.v.gmv/1e8).toFixed(2)+'억</b></div>'+
+  '<div class="m"><span>CMR</span><b>'+r.v.cmr.toFixed(1)+'%</b></div>'+
+  '<div class="m"><span>계정당 CM</span><b>'+won(r.v.cm/r.n)+'</b></div>'+
+  '<div class="snbar"><div style="width:'+s+'%;background:'+th.c+';display:flex;align-items:center;justify-content:center">직계약 '+s.toFixed(0)+'%</div><div class="b2" style="width:'+(100-s)+'%">'+(100-s>=12?(100-s).toFixed(0)+'%':'')+'</div></div></div>';}).join('');
+ document.getElementById('sbNote').innerHTML='<div class="callout" style="border-color:'+th.c+';background:'+th.bg+'"><b style="color:'+th.c+'">'+lab+' —</b> '+
+  (track==='a'?'CVR 1위 <b>'+rows[0].k+' '+rows[0].v.cvr.toFixed(2)+'%</b>, CM 1위 '+[...rows].sort((a,b)=>b.v.cm-a.v.cm)[0].k+'. 상시는 전환율이 다음 달 CM을 예고합니다.'
+   :'프로모션 CM 1위 <b>'+rows[0].k+' '+won(rows[0].v.cm)+'</b>('+rows[0].n+'개 보유), 계정당 CM 1위 '+[...rows].sort((a,b)=>(b.v.cm/b.n)-(a.v.cm/a.n))[0].k+'.')+'</div>';
+ // CVR trend
+ document.getElementById('cvT').textContent=th.ico+' '+th.nm+' · CVR 추이';
+ document.getElementById('cvS').innerHTML=track==='a'?'상시 전환율은 <b>노출 대비 얼마나 팔리는가</b>를 보여주는 선행지표입니다.':'프로모션 CVR은 <b>딜이 열린 달에 급등</b>합니다 — 상시와 같은 잣대로 비교하면 안 되는 이유입니다.';
+ const C1={labels:MN,datasets:OWN.map(k=>({label:k,data:OWNM()[k].map(x=>x[5]),borderColor:CLR[k],borderWidth:2.5,pointRadius:3,tension:.25}))
+   .concat([{label:'팀 전체',data:TEAM().map(x=>x[5]),borderColor:'#9AA8BF',borderWidth:2,borderDash:[5,4],pointRadius:0,tension:.25}])};
+ const oC={responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',align:'end',labels:{boxWidth:11,font:{...F,weight:'700',size:10.5}}},title:{display:true,text:'담당자별 월 CVR (%) — 선택: '+lab,align:'start',font:{...F,size:12.5,weight:'800'},color:'#0F1B2D',padding:{bottom:10}}},scales:{y:{grid:{color:'#EDF0F6'},ticks:{font:F,callback:v=>(Math.round(v*100)/100)+'%'}},x:{grid:{display:false},ticks:{font:{...F,weight:'700'}}}}};
+ if(chC){chC.data=C1;chC.options=oC;chC.update();}else chC=new Chart(document.getElementById('cCVR'),{type:'line',data:C1,options:oC});
+ // detail
+ const keys=['팀 전체'].concat(OWN);
+ document.getElementById('tabs').innerHTML=keys.map(k=>'<button class="tab'+(k===cur?' on':'')+'" style="'+(k===cur?'background:'+th.dk+';border-color:'+th.dk:'')+'" onclick="selOwner(\''+k+'\')">'+k+'</button>').join('');
+ const dd=cur==='팀 전체'?TEAM():OWNM()[cur];
+ document.getElementById('dT').textContent=th.ico+' 월별 상세 — '+cur;
+ document.getElementById('dS').innerHTML=track==='a'?'상시 계정만 집계된 월별 지표입니다.':'프로모션 계정만 집계된 월별 지표입니다.';
+ document.getElementById('mt').innerHTML=dd.map((r,i)=>{const s=r[7]/(r[7]+r[8])*100;
+  return '<tr class="'+(i===mi?'sel':'')+'"><td style="font-weight:800">'+MN[i]+'</td>'+
+  '<td style="font-weight:800;color:'+(r[5]>=3.5?'var(--pos)':(r[5]<2?'var(--neg)':'var(--ink)'))+'">'+r[5].toFixed(2)+'%</td>'+
+  '<td style="font-weight:800">'+won(r[2])+'</td><td>'+won(r[1])+'</td><td>'+r[3].toFixed(1)+'%</td><td>'+r[4].toLocaleString()+'</td><td>'+r[0].toLocaleString()+'</td>'+
+  '<td style="color:'+th.c+';font-weight:700">'+r[7].toLocaleString()+'</td><td style="color:#E0863A;font-weight:700">'+r[8].toLocaleString()+'</td>'+
+  '<td style="font-weight:800">'+s.toFixed(0)+'%</td><td>'+r[6]+'</td></tr>';}).join('');
+ const A={labels:MN,datasets:[{type:'bar',label:'실제 CM(백만)',data:dd.map(x=>Math.round(x[2]/1e6)),backgroundColor:th.c,borderRadius:5,yAxisID:'y'},
+  {type:'line',label:'CVR(%)',data:dd.map(x=>x[5]),borderColor:'#CE3D5B',backgroundColor:'#CE3D5B',borderWidth:3,pointRadius:4,tension:.25,yAxisID:'y2'}]};
+ const B={labels:MN,datasets:[{type:'bar',label:'직계약',data:dd.map(x=>x[7]),backgroundColor:th.c,borderRadius:4,stack:'s'},
+  {type:'bar',label:'연동',data:dd.map(x=>x[8]),backgroundColor:'#E0863A',borderRadius:4,stack:'s'}]};
+ const oA={responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',align:'end',labels:{boxWidth:11,font:{...F,weight:'700',size:10.5}}},title:{display:true,text:'CM & CVR',align:'start',font:{...F,size:12.5,weight:'800'},color:'#0F1B2D',padding:{bottom:10}}},scales:{y:{grid:{color:'#EDF0F6'},ticks:{font:F,callback:v=>v+'백만'}},y2:{position:'right',grid:{display:false},ticks:{stepSize:0.5,font:F,callback:v=>v.toFixed(1)+'%',color:'#CE3D5B'}},x:{grid:{display:false},ticks:{font:{...F,weight:'700'}}}}};
+ const oB={responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',align:'end',labels:{boxWidth:11,font:{...F,weight:'700',size:10.5}}},title:{display:true,text:'직계약 vs 연동 (예약건)',align:'start',font:{...F,size:12.5,weight:'800'},color:'#0F1B2D',padding:{bottom:10}}},scales:{y:{stacked:true,grid:{color:'#EDF0F6'},ticks:{font:F}},x:{stacked:true,grid:{display:false},ticks:{font:{...F,weight:'700'}}}}};
+ if(ch1){ch1.data=A;ch1.options=oA;ch1.update();}else ch1=new Chart(document.getElementById('c1'),{data:A,options:oA});
+ if(ch2){ch2.data=B;ch2.options=oB;ch2.update();}else ch2=new Chart(document.getElementById('c2'),{data:B,options:oB});
+ renderYoY();renderAcc();renderAgenda();
+ document.getElementById('foot').innerHTML='<b>트랙 정의 —</b> 📊 <b>상시</b>: 국내중점호텔 483 GID(담당자 리스트에서 프로모션 키어카운트를 뺀 집합). 🔑 <b>키어카운트</b>: 담당자 리스트에서 중점호텔을 뺀 42 GID(프로모션 전용 상품). 두 트랙은 <b>서로 배타적인 GID 집합</b>이며, 담당자별로도 각각의 포트폴리오(형금_상시 50 / 형금_키 5 · 다경_키 19 등)로 분리 조회했습니다.<br>'+
+ '<b>지표 —</b> CVR = 구매완료÷상세조회 UV · 실제 CM = 비용 제외 공헌이익 · CMR = 공헌이익률 · 직계약% = 스테이넷 예약건 비중 · 활성 = 해당 월 거래 발생 숙소 수 · 8월은 8/20까지.<br>'+
+ '<b>병합 —</b> 파라다이스시티는 dstay에서 「파라다이스시티 호텔」과 「파라다이스 시티 / 아트 파라디소」 두 숙소로 분리 집계되나, 동일 어카운트이므로 본 대시보드에서는 <b>「파라다이스 시티 / 아트 파라디소」로 합산 표기</b>합니다(2026년 프로모션 신규 GID 6297799 포함).<br><b>주의 —</b> dstay는 GID가 아닌 <b>숙소(property) 단위로 실적을 집계</b>합니다. 키어카운트 GID 중 일부는 상시 숙소의 보조 상품이라, 두 트랙의 금액을 <b>단순 합산하면 중복</b>될 수 있습니다. 각 트랙 내부의 비교(담당자 간·월 간·계정 간)는 정확하며, 트랙 간 합계 비교는 피하세요.';
+}
+function renderYoY(){
+ const th=TH(),lab=mi===99?'1~8월 누적':MN[mi];
+ const cur25=(cur==='팀 전체')?TEAM25():(OWN25()?OWN25()[cur]:null);
+ const cur26=(cur==='팀 전체')?TEAM():OWNM()[cur];
+ document.getElementById('yoT').textContent='📈 작년 대비 (YoY) — '+cur+' · '+lab;
+ if(!cur25){document.getElementById('yoS').innerHTML='<b>담당자별 2025년 프로모션 데이터는 아직 미수집</b>입니다. 팀 전체 탭을 선택하면 프로모션 트랙의 YoY를 볼 수 있습니다.';
+  document.getElementById('yoK').innerHTML='';if(chY1){chY1.destroy();chY1=null;}if(chY2){chY2.destroy();chY2=null;}return;}
+ document.getElementById('yoS').innerHTML='올해 도입한 이니셔티브가 <b>작년 같은 기간 대비 수치로 나타나는지</b> 확인합니다. 동일 포트폴리오·동일 기간(1/1~8/19).';
+ const A=mi===99?agg(cur26):row(cur26,mi), B=mi===99?agg(cur25):row(cur25,mi);
+ const sA=A.sn/(A.sn+A.ch)*100,sB=B.sn/(B.sn+B.ch)*100;
+ document.getElementById('yoK').innerHTML=
+ '<div class="kpi hi" style="background:'+th.dk+'"><div class="l">CVR YoY</div><div class="v num">'+A.cvr.toFixed(2)+'<small>% vs '+B.cvr.toFixed(2)+'%</small></div><div class="d">'+arrow(A.cvr-B.cvr,'%p',2)+'</div></div>'+
+ '<div class="kpi"><div class="l">실제 CM YoY</div><div class="v num">'+won(A.cm)+'</div><div class="d">'+arrow(pct(A.cm,B.cm),'%')+' vs '+won(B.cm)+'</div></div>'+
+ '<div class="kpi"><div class="l">GMV YoY</div><div class="v num">'+(A.gmv/1e8).toFixed(1)+'<small>억</small></div><div class="d">'+arrow(pct(A.gmv,B.gmv),'%')+'</div></div>'+
+ '<div class="kpi"><div class="l">CMR YoY</div><div class="v num">'+A.cmr.toFixed(1)+'<small>%</small></div><div class="d">'+arrow(A.cmr-B.cmr,'%p',1)+'</div></div>'+
+ '<div class="kpi"><div class="l">직계약 비중 YoY</div><div class="v num">'+sA.toFixed(0)+'<small>% vs '+sB.toFixed(0)+'%</small></div><div class="d">'+arrow(sA-sB,'%p',0)+'</div></div>'+
+ '<div class="kpi"><div class="l">활성 숙소 YoY</div><div class="v num">'+A.act+'<small> vs '+B.act+'</small></div><div class="d">'+arrow(A.act-B.act,'개',0)+'</div></div>';
+ const Y1={labels:MN,datasets:[{label:'2025 CM(백만)',data:cur25.map(x=>Math.round(x[2]/1e6)),backgroundColor:'#C7D0E0',borderRadius:5},{label:'2026 CM(백만)',data:cur26.map(x=>Math.round(x[2]/1e6)),backgroundColor:th.c,borderRadius:5}]};
+ const Y2={labels:MN,datasets:[{label:'2025 CVR',data:cur25.map(x=>x[5]),borderColor:'#9AA8BF',borderWidth:2.5,borderDash:[5,4],pointRadius:3,tension:.25},{label:'2026 CVR',data:cur26.map(x=>x[5]),borderColor:'#CE3D5B',borderWidth:3,pointRadius:4,tension:.25}]};
+ const o1={responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',align:'end',labels:{boxWidth:11,font:{...F,weight:'700',size:10.5}}},title:{display:true,text:'공헌이익 YoY',align:'start',font:{...F,size:12.5,weight:'800'},color:'#0F1B2D',padding:{bottom:10}}},scales:{y:{grid:{color:'#EDF0F6'},ticks:{font:F}},x:{grid:{display:false},ticks:{font:{...F,weight:'700'}}}}};
+ const o2={responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',align:'end',labels:{boxWidth:11,font:{...F,weight:'700',size:10.5}}},title:{display:true,text:'CVR YoY (%)',align:'start',font:{...F,size:12.5,weight:'800'},color:'#0F1B2D',padding:{bottom:10}}},scales:{y:{grid:{color:'#EDF0F6'},ticks:{font:F,callback:v=>(Math.round(v*100)/100)+'%'}},x:{grid:{display:false},ticks:{font:{...F,weight:'700'}}}}};
+ if(chY1){chY1.data=Y1;chY1.options=o1;chY1.update();}else chY1=new Chart(document.getElementById('cY1'),{type:'bar',data:Y1,options:o1});
+ if(chY2){chY2.data=Y2;chY2.options=o2;chY2.update();}else chY2=new Chart(document.getElementById('cY2'),{type:'line',data:Y2,options:o2});
+}
+const GID={};
+const norm=s=>s.replace(/[\s·,]/g,'');
+const KEYSET=new Set(DB.keyacc.map(r=>norm(r[0])));
+function renderAcc(){
+ const th=TH(),lab=mi===99?'1~8월 누적':MN[mi];
+ const k=mi===99?'cum':String(mi+1);
+ const raw=DB.acc[k]||DB.acc['cum'];
+ let list=track==='a'?raw.filter(r=>!KEYSET.has(norm(r[0]))):(mi===99?DB.keyacc:raw.filter(r=>KEYSET.has(norm(r[0]))));
+ if(track==='b'&&!list.length)list=DB.keyacc;
+ document.getElementById('acT').textContent=th.ico+' 어카운트 목록 — '+lab+(DB.acc[k]?'':' (해당 월 미수집 · 누적)');
+ document.getElementById('acS').innerHTML=track==='a'
+  ?'<b>상시 계정만</b> 나열됩니다 (프로모션 키어카운트 제외). CVR 4% 이상은 노출 확대 후보, 2% 미만은 진단 대상.'
+  :'<b>프로모션 계정만</b> 나열됩니다 (상시 계정 제외). 프로모션이 열린 달에 CVR·CM이 함께 뜁니다.';
+ const prevK=(mi>0&&mi!==99)?String(mi):null;
+ const pv=prevK&&DB.acc[prevK]?Object.fromEntries(DB.acc[prevK].filter(r=>track==='a'?!KEYSET.has(norm(r[0])):KEYSET.has(norm(r[0]))).map(r=>[norm(r[0]),r])):null;
+ const idx={cvr:3,cm:1,gmv:2}[sortK];
+ ['sCVR','sCM','sGM'].forEach((id,i)=>{const b=document.getElementById(id);b.classList.toggle('on',['cvr','cm','gmv'][i]===sortK);b.style.background=(['cvr','cm','gmv'][i]===sortK)?th.dk:'';b.style.borderColor=(['cvr','cm','gmv'][i]===sortK)?th.dk:'';});
+ document.getElementById('at').innerHTML=[...list].sort((a,b)=>b[idx]-a[idx]).map((r,i)=>{
+  const p=pv&&pv[norm(r[0])];const d=p?pct(r[1],p[1]):null;
+  const g=GID[norm(r[0])];
+  return '<tr><td style="color:var(--sub)">'+(i+1)+'</td><td style="font-weight:700;max-width:210px;overflow:hidden;text-overflow:ellipsis">'+r[0]+'</td>'+
+  '<td style="font-size:11px">'+(g?'<a href="https://manager.myrealtrip.com/crm/staynet/'+g+'" target="_blank" style="color:var(--sub);text-decoration:none">'+g+' ↗</a>':'<span class="fl">—</span>')+'</td>'+
+  '<td style="font-weight:800;color:'+(r[3]>=4?'var(--pos)':(r[3]<2?'var(--neg)':'var(--ink)'))+'">'+r[3].toFixed(2)+'%</td>'+
+  '<td style="font-weight:800">'+won(r[1])+'</td><td>'+won(r[2])+'</td><td>'+r[4].toLocaleString()+'</td><td>'+r[5].toFixed(1)+'%</td>'+
+  '<td>'+(d===null?'<span class="fl">신규/무</span>':arrow(d,'%'))+'</td></tr>';}).join('');
+}
+render();
+</script></body></html>
